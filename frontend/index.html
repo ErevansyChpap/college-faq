@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSphere — Управление образовательным пространством</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* ============================================================
+           ROOT
+           ============================================================ */
+        :root {
+            --bg-primary: #F7F9FC;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-sidebar: #0B1120;
+            --bg-sidebar-hover: rgba(255,255,255,0.06);
+            
+            --text-primary: #0B1120;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+            --text-inverse: #FFFFFF;
+            
+            --accent-1: #7C3AED;
+            --accent-2: #6D28D9;
+            --accent-3: #8B5CF6;
+            --accent-gradient: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+            --accent-glow: rgba(124, 58, 237, 0.25);
+            
+            --border-color: #E9EDF4;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 30px rgba(0,0,0,0.06);
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.08);
+            --shadow-xl: 0 30px 80px rgba(124, 58, 237, 0.12);
+            
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            
+            --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ============================================================
+           RESET
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        ::selection {
+            background: var(--accent-1);
+            color: white;
+        }
+
+        /* ============================================================
+           SCROLLBAR
+           ============================================================ */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-3);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-1);
+        }
+
+        /* ============================================================
+           LAYOUT
+           ============================================================ */
+        .app {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* ============================================================
+           SIDEBAR
+           ============================================================ */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            padding: 28px 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 28px;
+        }
+
+        .sidebar-brand .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--accent-gradient);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+            position: relative;
+        }
+
+        .sidebar-brand .logo-icon::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 17px;
+            background: var(--accent-gradient);
+            opacity: 0.3;
+            filter: blur(8px);
+            z-index: -1;
+        }
+
+        .sidebar-brand .brand-text {
+            color: white;
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-brand .brand-text span {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+        }
+
+        .sidebar-nav .nav-label {
+            color: rgba(255,255,255,0.25);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 700;
+            padding: 0 14px;
+            margin: 20px 0 10px 0;
+        }
+
+        .sidebar-nav .nav-label:first-of-type {
+            margin-top: 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 11px 16px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.55);
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 14px;
+            position: relative;
+            width: 100%;
+            background: none;
+            border: none;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .nav-item:hover {
+            color: white;
+            background: var(--bg-sidebar-hover);
+        }
+
+        .nav-item.active {
+            color: white;
+            background: rgba(124, 58, 237, 0.2);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 24px;
+            background: var(--accent-gradient);
+            border-radius: 0 4px 4px 0;
+        }
+
+        .nav-item .icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .nav-item .badge {
+            margin-left: auto;
+            background: rgba(124, 58, 237, 0.3);
+            color: var(--accent-3);
+            font-size: 11px;
+            padding: 1px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .nav-item .badge.danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #F87171;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 20px;
+            margin-top: auto;
+        }
+
+        .sidebar-footer .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255,255,255,0.35);
+            font-size: 13px;
+        }
+
+        .sidebar-footer .status .dot {
+            width: 7px;
+            height: 7px;
+            background: #34D399;
+            border-radius: 50%;
+            animation: pulse-dot 2.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        /* ============================================================
+           MAIN CONTENT
+           ============================================================ */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 32px 44px 40px 44px;
+            min-height: 100vh;
+        }
+
+        /* ============================================================
+           TOP BAR
+           ============================================================ */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-primary);
+            padding: 4px;
+        }
+
+        .topbar-left h1 {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .topbar-left .subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 2px;
+            -webkit-text-fill-color: var(--text-secondary);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .topbar-right .date-badge {
+            background: var(--bg-secondary);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .topbar-right .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+            transition: var(--transition);
+        }
+
+        .topbar-right .user-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        /* ============================================================
+           STATS
+           ============================================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 22px 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-gradient);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--accent-3);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .stat-card .stat-icon {
+            font-size: 28px;
+            opacity: 0.8;
+        }
+
+        .stat-card .stat-number {
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-top: 8px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-card .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .stat-card .stat-change {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 12px;
+            border-radius: 20px;
+        }
+
+        .stat-change.green {
+            color: #059669;
+            background: #D1FAE5;
+        }
+
+        .stat-change.yellow {
+            color: #D97706;
+            background: #FEF3C7;
+        }
+
+        .stat-change.purple {
+            color: #7C3AED;
+            background: #EDE9FE;
+        }
+
+        .stat-change.blue {
+            color: #2563EB;
+            background: #DBEAFE;
+        }
+
+        /* ============================================================
+           TAB CONTENT
+           ============================================================ */
+        .tab-panel {
+            display: none;
+            animation: fadeSlide 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+           SECTION CARD
+           ============================================================ */
+        .section-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 28px 32px;
+            margin-bottom: 28px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .section-header h2 {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .section-header .count {
+            background: var(--bg-primary);
+            padding: 4px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* ============================================================
+           FAQ GRID
+           ============================================================ */
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 18px;
+        }
+
+        .faq-item {
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            padding: 22px 24px;
+            border: 1px solid transparent;
+            transition: var(--transition);
+            cursor: default;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-3);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            background: var(--bg-secondary);
+        }
+
+        .faq-item .q {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: var(--text-primary);
+        }
+
+        .faq-item .q .q-badge {
+            background: var(--accent-gradient);
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 0 8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            line-height: 20px;
+        }
+
+        .faq-item .a {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.7;
+            padding-left: 32px;
+        }
+
+        .faq-item .meta {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            padding-left: 32px;
+            font-size: 12px;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .faq-item .meta .cat {
+            background: var(--bg-secondary);
+            padding: 2px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+        }
+
+        /* ============================================================
+           SERVICES GRID
+           ============================================================ */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 18px;
+        }
+
+        .service-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            padding: 22px 24px;
+            border-left: 4px solid var(--accent-1);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background: var(--accent-gradient);
+            opacity: 0.04;
+            border-radius: 0 0 0 60px;
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .service-card .name {
+            font-weight: 700;
+            font-size: 17px;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .service-card .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .service-card .detail-row .label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* ============================================================
+           TABLE
+           ============================================================ */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead th {
+            background: var(--bg-primary);
+            padding: 14px 18px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        tbody td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+            background: var(--bg-secondary);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover td {
+            background: var(--bg-primary);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 14px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-pill.new {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+
+        .status-pill.resolved {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .days-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .days-badge.warning {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+
+        .days-badge.danger {
+            background: #FEE2E2;
+            color: #B91C1C;
+        }
+
+        .days-badge.success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            text-decoration: none;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #DC2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #B91C1C;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent-1);
+            color: var(--accent-1);
+        }
+
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================================
+           FORM
+           ============================================================ */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-primary);
+            letter-spacing: 0.2px;
+        }
+
+        .form-group label .required {
+            color: #DC2626;
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            transition: var(--transition);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-1);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+            background: var(--bg-secondary);
+        }
+
+        .form-group textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .form-group .hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        /* ============================================================
+           FILTER BAR
+           ============================================================ */
+        .filter-bar {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 14px 20px;
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            margin-bottom: 22px;
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-bar label {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .filter-bar select {
+            padding: 8px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            background: var(--bg-secondary);
+            font-family: inherit;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* ============================================================
+           ALERT
+           ============================================================ */
+        .alert {
+            padding: 16px 22px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+            display: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .alert.show {
+            display: block;
+            animation: fadeSlide 0.4s ease;
+        }
+
+        .alert-success {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #6EE7B7;
+        }
+
+        .alert-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+        }
+
+        .alert-info {
+            background: #DBEAFE;
+            color: #1E40AF;
+            border: 1px solid #93C5FD;
+        }
+
+        /* ============================================================
+           EMPTY STATE
+           ============================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state .icon {
+            font-size: 52px;
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: var(--text-secondary);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 16px 24px;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 280px;
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast-success {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .toast-danger {
+            background: linear-gradient(135deg, #DC2626, #B91C1C);
+        }
+
+        .toast-info {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+        }
+
+        .toast .toast-icon {
+            font-size: 20px;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 300px;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px 16px 30px 16px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .topbar-left h1 {
+                font-size: 20px;
+            }
+
+            .topbar-left .subtitle {
+                font-size: 12px;
+            }
+
+            .topbar-right .date-badge {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 16px 18px;
+            }
+
+            .stat-card .stat-number {
+                font-size: 24px;
+            }
+
+            .section-card {
+                padding: 18px 16px;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: 1;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 999;
+                backdrop-filter: blur(4px);
+            }
+
+            .sidebar-overlay.show {
+                display: block;
+            }
+
+            .table-wrap {
+                font-size: 12px;
+            }
+
+            thead th, tbody td {
+                padding: 10px 12px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-sm {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar-left h1 {
+                font-size: 18px;
+            }
+
+            .toast-container {
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+            }
+
+            .toast {
+                min-width: unset;
+                width: 100%;
+            }
+        }
+
+        /* ============================================================
+           SIDEBAR OVERLAY
+           ============================================================ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            backdrop-filter: blur(4px);
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* ============================================================
+           LOADING SKELETON
+           ============================================================ */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-primary) 25%, var(--border-color) 50%, var(--bg-primary) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s ease-in-out infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .skeleton-text {
+            height: 14px;
+            margin: 6px 0;
+        }
+
+        .skeleton-title {
+            height: 22px;
+            width: 60%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+SIDEBAR OVERLAY (mobile)
+============================================================ -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- ============================================================
+APP
+============================================================ -->
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="logo-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="brand-text">Edu<span>Sphere</span></div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-label">Навигация</div>
+            <button class="nav-item active" data-tab="faq" onclick="switchTab('faq')">
+                <span class="icon"><i class="fas fa-book-open"></i></span>
+                База знаний
+                <span class="badge" id="faqBadge">0</span>
+            </button>
+            <button class="nav-item" data-tab="services" onclick="switchTab('services')">
+                <span class="icon"><i class="fas fa-building"></i></span>
+                Службы
+                <span class="badge" id="servicesBadge">0</span>
+            </button>
+
+            <div class="nav-label">Управление</div>
+            <button class="nav-item" data-tab="tickets" onclick="switchTab('tickets')">
+                <span class="icon"><i class="fas fa-ticket-alt"></i></span>
+                Обращения
+                <span class="badge" id="ticketsBadge">0</span>
+            </button>
+            <button class="nav-item" data-tab="unresolved" onclick="switchTab('unresolved')">
+                <span class="icon"><i class="fas fa-clock"></i></span>
+                В ожидании
+                <span class="badge danger" id="unresolvedBadge">0</span>
+            </button>
+
+            <div class="nav-label">Действия</div>
+            <button class="nav-item" data-tab="create" onclick="switchTab('create')">
+                <span class="icon"><i class="fas fa-pen"></i></span>
+                Новое обращение
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="status">
+                <span class="dot"></span>
+                <span>Система активна</span>
+                <span style="margin-left: auto; font-size: 11px; opacity:0.4;">v3.0</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-content">
+
+        <!-- ===== TOP BAR ===== -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div>
+                    <h1 id="pageTitle">База знаний</h1>
+                    <div class="subtitle" id="pageSubtitle">Управление контентом образовательного портала</div>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <span class="date-badge" id="currentDate"></span>
+                <div class="user-avatar" title="Администратор">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== STATS ===== -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon"><i class="fas fa-book"></i></div>
+                </div>
+                <div class="stat-number" id="statFaq">0</div>
+                <div class="stat-label">FAQ статей</div>
+                <span class="stat-change purple">База знаний</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon"><i class="fas fa-landmark"></i></div>
+                </div>
+                <div class="stat-number" id="statServices">0</div>
+                <div class="stat-label">Служб</div>
+                <span class="stat-change purple">Инфраструктура</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon"><i class="fas fa-ticket-alt"></i></div>
+                </div>
+                <div class="stat-number" id="statTickets">0</div>
+                <div class="stat-label">Всего обращений</div>
+                <span class="stat-change blue">Активность</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+                </div>
+                <div class="stat-number" id="statUnresolved">0</div>
+                <div class="stat-label">В ожидании</div>
+                <span class="stat-change yellow" id="statUnresolvedChange">Требуют внимания</span>
+            </div>
+        </div>
+
+        <!-- ===== TAB: FAQ ===== -->
+        <div class="tab-panel active" id="tab-faq">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-book-open" style="color:var(--accent-1);margin-right:10px;"></i>База знаний</h2>
+                    <span class="count" id="faqCount">0 статей</span>
+                </div>
+                <div id="faqContainer">
+                    <div class="empty-state">
+                        <span class="icon"><i class="fas fa-spinner fa-spin"></i></span>
+                        <h3>Загрузка данных...</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: SERVICES ===== -->
+        <div class="tab-panel" id="tab-services">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-building" style="color:var(--accent-1);margin-right:10px;"></i>Службы колледжа</h2>
+                    <span class="count" id="servicesCount">0 служб</span>
+                </div>
+                <div id="servicesContainer">
+                    <div class="empty-state">
+                        <span class="icon"><i class="fas fa-spinner fa-spin"></i></span>
+                        <h3>Загрузка данных...</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: TICKETS ===== -->
+        <div class="tab-panel" id="tab-tickets">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-ticket-alt" style="color:var(--accent-1);margin-right:10px;"></i>Все обращения</h2>
+                    <span class="count" id="ticketsCount">0 обращений</span>
+                </div>
+
+                <div class="filter-bar">
+                    <label for="statusFilter"><i class="fas fa-filter"></i> Фильтр:</label>
+                    <select id="statusFilter" onchange="loadTickets()">
+                        <option value="">Все обращения</option>
+                        <option value="Новый">🟡 Новые</option>
+                        <option value="Решен">✅ Решенные</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm" onclick="loadTickets()">
+                        <i class="fas fa-sync-alt"></i> Обновить
+                    </button>
+                </div>
+
+                <div id="ticketsContainer">
+                    <div class="empty-state">
+                        <span class="icon"><i class="fas fa-spinner fa-spin"></i></span>
+                        <h3>Загрузка данных...</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: UNRESOLVED ===== -->
+        <div class="tab-panel" id="tab-unresolved">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-clock" style="color:#D97706;margin-right:10px;"></i>Ожидают решения</h2>
+                    <span class="count" id="unresolvedCount">0 обращений</span>
+                </div>
+                <div id="unresolvedContainer">
+                    <div class="empty-state">
+                        <span class="icon"><i class="fas fa-spinner fa-spin"></i></span>
+                        <h3>Загрузка данных...</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: CREATE ===== -->
+        <div class="tab-panel" id="tab-create">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2><i class="fas fa-pen" style="color:var(--accent-1);margin-right:10px;"></i>Создать обращение</h2>
+                </div>
+
+                <div id="createAlert" class="alert"></div>
+
+                <form id="ticketForm" onsubmit="handleCreateTicket(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>ФИО студента <span class="required">*</span></label>
+                            <input type="text" id="studentName" placeholder="Иванов Иван Иванович" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Курс <span class="required">*</span></label>
+                            <select id="courseSelect" required>
+                                <option value="">Выберите курс</option>
+                                <option value="1">1-й курс</option>
+                                <option value="2">2-й курс</option>
+                                <option value="3">3-й курс</option>
+                                <option value="4">4-й курс</option>
+                            </select>
+                        </div>
+                        <div class="form-group full">
+                            <label>Вопрос <span class="required">*</span></label>
+                            <textarea id="questionText" placeholder="Опишите вашу проблему или вопрос подробно..." required minlength="10"></textarea>
+                            <span class="hint"><i class="fas fa-info-circle"></i> Минимум 10 символов</span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Отправить
+                        </button>
+                        <button type="reset" class="btn btn-outline">
+                            <i class="fas fa-undo"></i> Очистить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============================================================
+SCRIPT
+============================================================ -->
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const API_BASE = 'http://localhost:8080/api';
+
+// ============================================================
+// DOM REFS
+// ============================================================
+const $ = id => document.getElementById(id);
+const $$ = sel => document.querySelectorAll(sel);
+
+// ============================================================
+// DATE
+// ============================================================
+function updateDate() {
+    const now = new Date();
+    const opts = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    $('currentDate').textContent = now.toLocaleDateString('ru-RU', opts);
+}
+updateDate();
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+function toggleSidebar() {
+    const sidebar = $('sidebar');
+    const overlay = $('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+}
+
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+        $('sidebar').classList.remove('open');
+        $('sidebarOverlay').classList.remove('show');
+    }
+});
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+const tabTitles = {
+    faq: ['База знаний', 'Управление контентом образовательного портала'],
+    services: ['Службы колледжа', 'Информация о подразделениях и контактах'],
+    tickets: ['Обращения студентов', 'Управление заявками и их статусами'],
+    unresolved: ['Ожидают решения', 'Обращения, требующие вашего внимания'],
+    create: ['Новое обращение', 'Создание заявки в службу поддержки']
+};
+
+function switchTab(tabName) {
+    // Update sidebar
+    $$('.nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelector(`.nav-item[data-tab="${tabName}"]`).classList.add('active');
+
+    // Update panels
+    $$('.tab-panel').forEach(el => el.classList.remove('active'));
+    const panel = $('tab-' + tabName);
+    if (panel) panel.classList.add('active');
+
+    // Update title
+    if (tabTitles[tabName]) {
+        $('pageTitle').textContent = tabTitles[tabName][0];
+        $('pageSubtitle').textContent = tabTitles[tabName][1];
+    }
+
+    // Load data
+    switch (tabName) {
+        case 'faq': loadFAQ(); break;
+        case 'services': loadServices(); break;
+        case 'tickets': loadTickets(); break;
+        case 'unresolved': loadUnresolved(); break;
+    }
+
+    // Close sidebar on mobile
+    if (window.innerWidth <= 768) {
+        toggleSidebar();
+    }
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(message, type = 'info') {
+    const container = $('toastContainer');
+    const icons = {
+        success: 'fas fa-check-circle',
+        danger: 'fas fa-exclamation-circle',
+        info: 'fas fa-info-circle'
+    };
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<span class="toast-icon"><i class="${icons[type] || icons.info}"></i></span> ${message}`;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(40px)';
+        toast.style.transition = 'all 0.4s ease';
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}
+
+// ============================================================
+// ALERT
+// ============================================================
+function showAlert(message, type = 'info') {
+    const el = $('createAlert');
+    el.className = `alert alert-${type} show`;
+    el.innerHTML = message;
+    clearTimeout(el._timeout);
+    el._timeout = setTimeout(() => el.className = 'alert', 6000);
+}
+
+// ============================================================
+// LOAD FAQ
+// ============================================================
+async function loadFAQ() {
+    const container = $('faqContainer');
+    const countEl = $('faqCount');
+    const badge = $('faqBadge');
+
+    try {
+        const resp = await fetch(`${API_BASE}/faq`);
+        if (!resp.ok) throw new Error('Ошибка загрузки');
+        const data = await resp.json();
+
+        countEl.textContent = `${data.length} статей`;
+        badge.textContent = data.length;
+        $('statFaq').textContent = data.length;
+
+        if (data.length === 0) {
+            container.innerHTML = `<div class="empty-state"><span class="icon"><i class="fas fa-book"></i></span><h3>Статей не найдено</h3><p>Добавьте первую статью в базу знаний</p></div>`;
+            return;
+        }
+
+        container.innerHTML = `<div class="faq-grid">${data.map(item => `
+            <div class="faq-item">
+                <div class="q"><span class="q-badge">Q</span> ${escapeHtml(item.question)}</div>
+                <div class="a">${escapeHtml(item.answer)}</div>
+                <div class="meta">
+                    <span class="cat"><i class="far fa-folder"></i> Категория #${item.category_id}</span>
+                    <span><i class="far fa-clock"></i> ${formatDate(item.updated_at)}</span>
+                </div>
+            </div>
+        `).join('')}</div>`;
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = `<div class="empty-state"><span class="icon"><i class="fas fa-exclamation-triangle" style="color:#DC2626;"></i></span><h3>Ошибка загрузки</h3><p>${err.message}</p></div>`;
+    }
+}
+
+// ============================================================
+// LOAD SERVICES
+// ============================================================
+async function loadServices() {
+    const container = $('servicesContainer');
+    const countEl = $('servicesCount');
+    const badge = $('servicesBadge');
+
+    try {
+        const resp = await fetch(`${API_BASE}/services`);
+        if (!resp.ok) throw new Error('Ошибка загрузки');
+        const data = await resp.json();
+
+        countEl.textContent = `${data.length} служб`;
+        badge.textContent = data.length;
+        $('statServices').textContent = data.length;
+
+        if (data.length === 0) {
+            container.innerHTML = `<div class="empty-state"><span class="icon"><i class="fas fa-building"></i></span><h3>Служб не найдено</h3></div>`;
+            return;
+        }
+
+        container.innerHTML = `<div class="services-grid">${data.map(item => `
+            <div class="service-card">
+                <div class="name">${escapeHtml(item.name)}</div>
+                <div class="detail-row"><span class="label"><i class="fas fa-door-open"></i> Кабинет</span><span>${item.room || '—'}</span></div>
+                <div class="detail-row"><span class="label"><i class="fas fa-layer-group"></i> Этаж</span><span>${item.floor || '—'}</span></div>
+                <div class="detail-row"><span class="label"><i class="fas fa-phone"></i> Телефон</span><span>${item.phone || '—'}</span></div>
+                <div class="detail-row"><span class="label"><i class="fas fa-user-tie"></i> Руководитель</span><span>${item.manager || '—'}</span></div>
+                <div class="detail-row"><span class="label"><i class="far fa-calendar-alt"></i> График</span><span>${item.schedule_weekdays || '—'}</span></div>
+            </div>
+        `).join('')}</div>`;
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = `<div class="empty-state"><span class="icon"><i class="fas fa-exclamation-triangle" style="color:#DC2626;"></i></span><h3>Ошибка загрузки</h3></div>`;
+    }
+}
+
+// ============================================================
+// LOAD TICKETS
+// ============================================================
+async function loadTickets() {
+    const container = $('ticketsContainer');
+    const countEl = $('ticketsCount');
+    const badge = $('ticketsBadge');
+    const status = $('statusFilter').value;
+
+    try {
+        const url = status ? `${API_BASE}/tickets?status=${encodeURIComponent(status)}` : `${API_BASE}/tickets`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('Ошибка загрузки');
+        const data = await resp.json();
+
+        countEl.textContent = `${data.length} обращений`;
+        badge.textContent = data.length;
+        $('statTickets').textContent = data.length;
+
+        if (data.length === 0) {
+            container.innerHTML = `<div class="empty-state"><span class="icon"><i class="fas fa-ticket-alt"></i></span><h3>Обращений не найдено</h3></div>`;
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="table-wrap">
+                <table>
+                    <thead><tr>
+                        <th>ID</th>
+                        <th>Студент</th>
+                        <th>Курс</th>
+                        <th>Вопрос</th>
+                        <th>Статус</th>
+                        <th>Дата</th>
+                        <th>Действия</th>
+                    </tr></thead>
+                    <tbody>${data.map(item => `
+                        <tr>
+                            <td><strong>#${item.id}</strong></td>
+                            <td>${escapeHtml(item.student_name)}</td>
+                            <td>${item.course} курс</td>
+                            <td title="${escapeHtml(item.question)}">${truncate(item.question, 45)}</td>
+                            <td><span class="status-pill ${item.status === 'Новый' ? 'new' : 'resolved'}">${item.status}</span></td>
+                            <td>${formatDate(item.created_at)}</td>
+                            <td>
+                                <div class="btn-group">
+                                    ${item.status === 'Новый' ? `<button class="btn btn-success btn-sm" onclick="resolveTicket(${item.id})"><i class="fas fa-check"></i> Решить</button>` : ''}
+                                    <button class="btn btn-danger btn-sm" onclick="deleteTicket(${item.id})"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>
+            </div>
+        `;
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = `<div class="empty-state"><span class="icon"><i class="fas fa-exclamation-triangle" style="color:#DC2626;"></i></span><h3>Ошибка загрузки</h3></div>`;
+    }
+}
+
+// ============================================================
+// LOAD UNRESOLVED
+// ============================================================
+async function loadUnresolved() {
+    const container = $('unresolvedContainer');
+    const countEl = $('unresolvedCount');
+    const badge = $('unresolvedBadge');
+
+    try {
+        const resp = await fetch(`${API_BASE}/tickets/unresolved`);
+        if (!resp.ok) throw new Error('Ошибка загрузки');
+        const data = await resp.json();
+
+        countEl.textContent = `${data.length} обращений`;
+        badge.textContent = data.length;
+        $('statUnresolved').textContent = data.length;
+
+        if (data.length === 0) {
+            container.innerHTML = `<div class="empty-state"><span class="icon"><i class="fas fa-check-circle" style="color:#059669;"></i></span><h3>Все обращения решены</h3><p>Отличная работа!</p></div>`;
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="table-wrap">
+                <table>
+                    <thead><tr>
+                        <th>ID</th>
+                        <th>Студент</th>
+                        <th>Курс</th>
+                        <th>Вопрос</th>
+                        <th>Дата</th>
+                        <th>Дней</th>
+                        <th>Действия</th>
+                    </tr></thead>
+                    <tbody>${data.map(item => `
+                        <tr>
+                            <td><strong>#${item.id}</strong></td>
+                            <td>${escapeHtml(item.student_name)}</td>
+                            <td>${item.course} курс</td>
+                            <td title="${escapeHtml(item.question)}">${truncate(item.question, 40)}</td>
+                            <td>${formatDate(item.created_at)}</td>
+                            <td><span class="days-badge ${item.days_passed > 5 ? 'danger' : item.days_passed > 2 ? 'warning' : 'success'}">${item.days_passed} дн.</span></td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-success btn-sm" onclick="resolveTicket(${item.id})"><i class="fas fa-check"></i></button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteTicket(${item.id})"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>
+            </div>
+        `;
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = `<div class="empty-state"><span class="icon"><i class="fas fa-exclamation-triangle" style="color:#DC2626;"></i></span><h3>Ошибка загрузки</h3></div>`;
+    }
+}
+
+// ============================================================
+// CREATE TICKET
+// ============================================================
+async function handleCreateTicket(e) {
+    e.preventDefault();
+
+    const name = $('studentName').value.trim();
+    const course = parseInt($('courseSelect').value);
+    const question = $('questionText').value.trim();
+
+    if (!name) { showAlert('Пожалуйста, введите ФИО студента', 'danger'); return; }
+    if (!course) { showAlert('Пожалуйста, выберите курс', 'danger'); return; }
+    if (question.length < 10) { showAlert('Вопрос должен содержать минимум 10 символов', 'danger'); return; }
+
+    try {
+        const resp = await fetch(`${API_BASE}/tickets`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ student_name: name, course, question })
+        });
+
+        const result = await resp.json();
+
+        if (resp.ok) {
+            showAlert(`✅ Обращение #${result.id} успешно создано!`, 'success');
+            $('ticketForm').reset();
+            showToast(`Обращение #${result.id} создано`, 'success');
+            loadTickets();
+            loadUnresolved();
+            updateStats();
+        } else {
+            showAlert(`❌ ${result.error || 'Ошибка создания'}`, 'danger');
+        }
+    } catch (err) {
+        showAlert(`❌ ${err.message}`, 'danger');
+    }
+}
+
+// ============================================================
+// RESOLVE TICKET
+// ============================================================
+async function resolveTicket(id) {
+    if (!confirm(`Отметить обращение #${id} как решенное?`)) return;
+
+    try {
+        const resp = await fetch(`${API_BASE}/tickets/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'Решен' })
+        });
+
+        if (resp.ok) {
+            showToast(`✅ Обращение #${id} решено`, 'success');
+            loadTickets();
+            loadUnresolved();
+            updateStats();
+        } else {
+            const result = await resp.json();
+            showToast(`❌ ${result.error || 'Ошибка'}`, 'danger');
+        }
+    } catch (err) {
+        showToast(`❌ ${err.message}`, 'danger');
+    }
+}
+
+// ============================================================
+// DELETE TICKET
+// ============================================================
+async function deleteTicket(id) {
+    if (!confirm(`Удалить обращение #${id}? Это действие необратимо!`)) return;
+
+    try {
+        const resp = await fetch(`${API_BASE}/tickets/${id}`, { method: 'DELETE' });
+
+        if (resp.ok) {
+            showToast(`🗑️ Обращение #${id} удалено`, 'info');
+            loadTickets();
+            loadUnresolved();
+            updateStats();
+        } else {
+            const result = await resp.json();
+            showToast(`❌ ${result.error || 'Ошибка'}`, 'danger');
+        }
+    } catch (err) {
+        showToast(`❌ ${err.message}`, 'danger');
+    }
+}
+
+// ============================================================
+// UPDATE STATS
+// ============================================================
+async function updateStats() {
+    try {
+        const [faqResp, ticketsResp, unresolvedResp] = await Promise.all([
+            fetch(`${API_BASE}/faq`),
+            fetch(`${API_BASE}/tickets`),
+            fetch(`${API_BASE}/tickets/unresolved`)
+        ]);
+
+        const faq = await faqResp.json();
+        const tickets = await ticketsResp.json();
+        const unresolved = await unresolvedResp.json();
+
+        $('statFaq').textContent = faq.length;
+        $('statTickets').textContent = tickets.length;
+        $('statUnresolved').textContent = unresolved.length;
+        $('faqBadge').textContent = faq.length;
+        $('ticketsBadge').textContent = tickets.length;
+        $('unresolvedBadge').textContent = unresolved.length;
+    } catch (err) {
+        console.error('Stats update error:', err);
+    }
+}
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function truncate(text, len) {
+    if (!text) return '—';
+    return text.length > len ? text.substring(0, len) + '…' : text;
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return '—';
+    const d = new Date(dateStr);
+    return d.toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    loadFAQ();
+    updateStats();
+    // Auto-refresh every 30 seconds
+    setInterval(updateStats, 30000);
+});
+
+// Keyboard shortcuts: Ctrl+1..5
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key >= '1' && e.key <= '5') {
+        e.preventDefault();
+        const tabs = ['faq', 'services', 'tickets', 'unresolved', 'create'];
+        const idx = parseInt(e.key) - 1;
+        if (idx < tabs.length) switchTab(tabs[idx]);
+    }
+});
+</script>
+</body>
+</html>
